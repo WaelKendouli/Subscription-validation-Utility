@@ -27,7 +27,7 @@
 
       const msPerDay = 24 * 60 * 60 * 1000;
 
-      function stripTime(date) {
+     function stripTime(date) {
         return new Date(date.getFullYear(), date.getMonth(), date.getDate());
       }
 

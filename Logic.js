@@ -268,4 +268,17 @@
         );
       });
 
-      
+       [
+        startDateInput,
+        planInput,
+        graceDaysInput,
+        soonDaysInput,
+        inclusiveEndInput,
+        fixedDaysModeInput,
+      ].forEach((el)=> {
+el.addEventListener("change" , () => {
+setStatus("Ready...");
+          })
+      });
+
+      resetOutputs();

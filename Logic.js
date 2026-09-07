@@ -112,3 +112,51 @@
 
         return addDays(start , planDays);
       }
+
+      function getSubscriptionStatus({
+        startDate,
+        planValue,
+        fixedDaysMode,
+        inclusiveEnd,
+        graceDays,
+        soonThresholdDays,
+        today,
+      })
+      {
+          const EndDate = stripTime(computeEndDate(startDate,planValue,fixedDaysMode));
+
+        const effectiveEnd = inclusiveEnd ? endDate : addDays(endDate, -1);
+        const graceEnd = stripTime(addDays(effectiveEnd, graceDays));
+        const t = stripTime(today);
+          const daysLeft = Math.floor((effectiveEnd - t) / msPerDay);
+
+          const isActive = t <= effectiveEnd;
+        const inGrace = !isActive && graceDays > 0 && t <= graceEnd;
+
+        let status = "EXPIRED";
+        let uiType = "bad";
+
+        if (isActive) {
+          if (daysLeft <= soonThresholdDays) {
+            status = "EXPIRING_SOON";
+            uiType = "warn";
+          } else {
+            status = "ACTIVE";
+            uiType = "good";
+          }
+        } else if (inGrace) {
+          status = "IN_GRACE";
+          uiType = "warn";
+        }
+        const finalValidUntil = graceDays > 0 ? graceEnd : effectiveEnd;
+
+        return {
+          status,
+          uiType,
+          endDate,
+          effectiveEnd,
+          graceEnd: graceDays > 0 ? graceEnd : null,
+          finalValidUntil,
+          daysLeft,
+        };
+      }

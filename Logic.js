@@ -252,3 +252,20 @@
         showMessage("neutral", "📌 Demo values set. Click “Check Status”.");
 
       })
+
+      btnClear.addEventListener("click", () => {
+        startDateInput.value = "";
+        planInput.value = "30";
+        graceDaysInput.value = "0";
+        soonDaysInput.value = "7";
+        inclusiveEndInput.checked = true;
+        fixedDaysModeInput.checked = true;
+
+        resetOutputs();
+        showMessage(
+          "neutral",
+          "Tip: Choose a start date, plan, then click “Check Status”."
+        );
+      });
+
+      

@@ -80,4 +80,22 @@
           return Number.isFinite(n) && n >= 0 ? Math.floor(n) : fallback;
       }
 
-      
+      function addDays(start , days)
+      {
+          const Current = new Date(start);
+          Current.setDate(Current.getDate() + days);
+      }
+
+      function addCalendarMonths(start , months)
+      {
+          const Current = new Date(start);
+          Current.setMonth(Current.getMonth() + months);
+      }
+
+      function addCalendarYears(start , years)
+      {
+          const Current = new Date(start);
+          Current.setFullYear(Current.getFullYear() + years);
+      }
+
+

@@ -98,4 +98,17 @@
           Current.setFullYear(Current.getFullYear() + years);
       }
 
+      function computeEndDate(start , planValue , fixedDaysMode)
+      {
+          const planDays = Number(planValue);
 
+          if (fixedDaysMode) {
+          return addDays(start, planDays);
+        }
+        if (planDays === 7) return addDays(start , 7);
+        if (planDays === 30) return addCalendarMonths(start,1);
+        if (planDays=== 90) return addCalendarMonths(start, 3);
+        if (planDays === 365) return addCalendarYears(start , 1); 
+
+        return addDays(start , planDays);
+      }

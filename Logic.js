@@ -160,3 +160,95 @@
           daysLeft,
         };
       }
+
+      function checkStatus()
+      {
+          const startVal = startDateInput.value;
+
+          if (!startVal) {
+          showMessage("bad", "❌ Please select a start date.");
+          resetOutputs();
+          return;
+        }
+
+        const startDate = stripTime(parseDateInput(startVal));
+        const planValue = planInput.value;
+
+        const graceDays = safeInt(graceDaysInput.value , 0);
+        const soonDays = safeInt(soonDaysInput.value , 7);
+
+        const inclusiveEnd = inclusiveEndInput.checked;
+        const fixedDaysMode = fixedDaysModeInput.checked;
+
+        const today = new Date();
+        const result = getSubscriptionStatus({
+          startDate,
+          planValue,
+          fixedDaysMode,
+          inclusiveEnd,
+          graceDays,
+          soonThresholdDays: soonDays,
+          today,
+        });
+
+                outEnd.textContent = formatDate(result.endDate);
+                outDaysLeft.textContent = result.daysLeft.toLocaleString();
+        outGraceEnd.textContent = result.graceEnd
+          ? formatDate(result.graceEnd)
+          : "—";
+        outFinalValid.textContent = formatDate(result.finalValidUntil);
+
+         if (result.status === "ACTIVE") {
+          setBadge("good", "Status: ACTIVE ✅");
+          showMessage("good", "✅ Subscription is active.");
+        } else if (result.status === "EXPIRING_SOON") {
+          setBadge("warn", "Status: EXPIRING SOON ⚠️");
+          showMessage(
+            "warn",
+            `⚠️ Subscription will expire soon (≤ ${soonDays} days left).`
+          );
+        } else if (result.status === "IN_GRACE") {
+          setBadge("warn", "Status: IN GRACE 🕒");
+          showMessage(
+            "warn",
+            "🕒 Subscription expired, but user is still within grace period."
+          );
+        } else {
+          setBadge("bad", "Status: EXPIRED ❌");
+          showMessage("bad", "❌ Subscription is expired.");
+        }
+
+        const planLabel = planInput.options[planInput.selectedIndex].text;
+        const modeLabel = fixedDaysMode ? "Fixed-days" : "Calendar-based";
+        const endRule = inclusiveEnd
+          ? "Inclusive end date"
+          : "Exclusive end date";
+
+           detailsLine.textContent =
+          `Details: Plan = ${planLabel} | Mode = ${modeLabel} | ` +
+          `${endRule} | Grace = ${graceDays} day(s) | Soon threshold = ${soonDays} day(s)`;
+
+        setStatus("Checked ✅");
+      } 
+
+      todayChip.textContent = `Today: ${formatDate(new Date())}`;
+      btnCheck.addEventListener("click", checkStatus);
+
+      btnDemo.addEventListener("click" , () => {
+          const t = new Date();
+          t.setDate(t.getDate() - 20);
+
+          const yyyy = t.getFullYear();
+        const mm = String(t.getMonth() + 1).padStart(2, "0");
+        const dd = String(t.getDate()).padStart(2, "0");
+        startDateInput.value = `${yyyy}-${mm}-${dd}`;
+
+        planInput.value = "30"; // monthly
+        graceDaysInput.value = "5";
+        soonDaysInput.value = "7";
+        inclusiveEndInput.checked = true;
+        fixedDaysModeInput.checked = true;
+        setStatus("Ready…");
+        showMessage("neutral", "📌 Demo values set. Click “Check Status”.");
+
+      })
